@@ -26,7 +26,6 @@
 #pwd
 #cd /
 
-
 #WOULD BECOME THE FOLLOWING
 
 ##---------------------------
@@ -125,6 +124,7 @@ mkdir
 
 
 
+DATE=$(date -Is) #$(date +"%Y-%m-%d")
 
 
 
