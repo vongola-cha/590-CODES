@@ -43,8 +43,8 @@ def f1(x):
 	return out
 
 #INITIAL GUESS 
-#xo=xmax #
-xo=np.random.uniform(xmin,xmax)
+xo=xmax #
+#xo=np.random.uniform(xmin,xmax)
 print("INITIAL GUESS: xo=",xo, " f(xo)=",f(xo))
 res = minimize(f1, xo, method='Nelder-Mead', tol=1e-5)
 popt=res.x
