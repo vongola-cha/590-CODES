@@ -20,55 +20,79 @@
 
 #------------------------------------------------------------------------------------
 
+echo "-------------------------------"
+echo "PART-1: BASICS"
+echo "-------------------------------"
 
-sleep_time=5  #define variable with sleep time in seconds
+echo "0) echo: one of the simpliest commands is 'echo'. It prints whatever is fed to it to the screen"
+echo;       #print blank line
+sleep 5     #pause script execution for 5 seconds 
+
+echo "0) The command 'sleep 5' pauses the script execution for 5 seconds"
+sleep 5  
+
+printf "\n1) Any command that can be excuted from the command line can also be excuted sequentially in an executable file known as a shell script, usually with the extension '.sh'. To make the file executable, you need to change the file permission using the command 'chmod a+x file_name.sh' \n"
+sleep 10
+
+echo "
+2) we can define variables 'sleep_time=5'
+"
+
+sleep_time=5 #define variable with time to sleep in seconds 
+
+echo "3) variables are referenced using a $ at the beginning, for example sleep_time="$sleep_time
+
+sleep $sleep_time
+
+printf "\n 4) In linux, folders are called directories, the entire linux system is stored in a hieracrhical directory tree, to see where you are use pwd which stands for print working directory \n\n"
+
+pwd
+
+sleep $sleep_time
+
+SCRIPT_LOC=${PWD} #SAVE ABSOLUTE PATH TO L1.1.4-LinuxBasics.sh SHELL SCRIPT TO FILE 
+
+
 DATE=$(date -Is) #save date as variable $(date +"%Y-%m-%d")
-echo $DATE
+printf "\n DATE="$DATE"\n"
 
+sleep $sleep_time
 
-# #---------------------------
-# #FILESYSTEM: 
-# #---------------------------
-
-# echo "------------------------"
-# echo "EXPLORE THE LINUX FILE SYSTEM"
-# echo "------------------------"
-# cd / 
-# pwd
-# ls 
-
-# echo "A------------------------"; sleep $sleep_time
-# cd /home/
-# pwd
-# ls 
-
-# echo "B------------------------"; sleep $sleep_time
-# cd ~/; 
-# pwd
-# echo "----------"
-# ls -ltr 
-# echo "----------"
-# ls *;
-# echo "----------"
-# ls -a
-# echo "----------"
-# du -csh *
-
-
-# #---------------------------
-# #MANUALS: 
-# #---------------------------
-# man pwd
-# man ls
-# man echo
-# exit
 
 
 
 #---------------------------
-#BLOCK: 
+#FILESYSTEM: 
 #---------------------------
 
+echo "------------------------"
+echo "EXPLORE THE LINUX FILE SYSTEM"
+echo "------------------------"
+cd / 
+pwd
+ls 
+
+echo "A------------------------"; sleep $sleep_time
+cd /home/
+pwd
+ls 
+
+echo "B------------------------"; sleep $sleep_time
+cd ~/; 
+pwd
+echo "----------"
+ls -ltr 
+echo "----------"
+ls *;
+echo "----------"
+ls -a
+echo "----------"
+du -csh *
+
+
+#---------------------------
+#BLOCK: MAKING FOLDERS AND FILES
+#---------------------------
 
 
 echo "A------------------------"; sleep $sleep_time
@@ -97,6 +121,7 @@ echo "hello computer" > file2.dat
 echo "hello human" >> file2.dat
 ls 
 more file*.dat
+nano file*.dat
 rm file1.dat
 ls
 more file2.dat
@@ -105,79 +130,67 @@ more file2.dat
 
 
 
+#---------------------------
+#FOR LOOPS AND WILDCARD *: 
+#---------------------------
+
+#RETURN TO SCRIPT LOCATION
+cd $SCRIPT_LOC
+
+echo "----HERE-A----"
+ls *.py
+echo "----HERE-B----"
+ls *.sh 
+
+echo "----HERE-C----"
+for i in *.py
+do
+      echo "FILE=" $i
+done
+sleep 5
+
+echo "----HERE-D----"
+for i in *.py
+do
+      echo "-----------" $i "-----------" 
+      grep "np" $i  #print everywhere you see string np in file
+done
+sleep 5
 
 
+echo "----HERE-E----"
+for i in *.py
+do
+      echo "-----------" $i "-----------" 
+      python $i  #run all python scripts
+done
+sleep 5
 
 
+#---------------------------
+#BLOCK: MANUALS AND ALIAS
+#---------------------------
 
-##EXPLORE LIST OPTIONS 
-#ls -a            #SHOW HIDDEN FILES
-
-
-
-
-
-
+man pwd
+man ls
+man echo
 
 
+# CREATING AN ALIAS 
+# alias cd590="cd ~/590-CODES/"
+# cd590
+
+exit #STOP THE SCRIPT 
 
 
-
-
-
-#echo "
-#NOTE: TO USE THIS SCRIPT SIMPLY OPEN THE BOTH THE FILE AND TERMINAL SIDE-BY-SIDE. RUN THE SCRIPT USING './LinuxBasics-1.sh'. IT WILL INCREMENTALLY OUTPUT EXPLAINATIONS. FOLLOW ALONG INSIDE THE SHELL SCRIPT TO WATCH WHAT THE COMMANDS OUTPUT
-#"
-
-
-
-#echo "-------------------------------"
-#echo "PART-1: BASICS"
-#echo "-------------------------------"
-
-#echo "0) echo: one of the simpliest commands is 'echo'. It prints whatever is fed to it to the screen"
-
-#sleep 4  #pause script execution for 4 seconds 
-
-#echo "1) Any command that can be excuted from the command line can also be excuted squentially in am executable file known as a shell script, usually wiht extension '.sh'. To make the file executable, you need to change the file permission using the commang 'chmod a+x file_name.sh'"
-#sleep 4
-
-#exit
-
-#echo "
-#2) we can define variables 'sleep_time=5'
-#"
-#sleep 4
-
-#sleep_time=6 #define variable with time to sleep in seconds 
-
-#echo "3) variables are referenced using a $ at the beginning, for example sleep_time="$sleep_time
-
-#sleep $sleep_time
-
-#echo "4) In linux, folders are called directories, the entire linux system is stored in a hieracrhical directory tree, to see where you are use pwd which stands for print working directory"
-
-#pwd
-
-#sleep $sleep_time
-
-
-
-#exit
+#------------------------
+#NOTES
+#-------------------------
 
 ##IMPORTANT LOCATIONS 
-
 ## /
 ## IS THE BOTTOME OF THE DIRECTORY TREE, SHOULD ALMOST NEVER EDIT THINGS HERE
-## IT IS WHERE THE OPERATING SYSTEM AND 
-
-## RUN THE FOLLOWING COMMANDS
-#cd / 
-#ls 
-#pwd 
-#sleep 2 
-
-
+      ## IT IS WHERE THE OPERATING SYSTEM AND 
 
 ##GROUPS
 
@@ -187,26 +200,3 @@ more file2.dat
 
 
 ##NAVIGATING THE DIRECTORY TREE
-
-
-#FOR EXAMPLE, THE BLOCK 
-
-##---------------------------
-##BLOCK
-##---------------------------
-
-#cd /
-#ls  
-#pwd
-#cd /
-
-#WOULD BECOME THE FOLLOWING
-
-##---------------------------
-##BLOCK
-##---------------------------
-
-#cd /             #NAVIGATE TO ROOT DIRECTORY / 
-#ls         #LIST TO THE SCREEN WHAT IS IN /
-#pwd        #PRINT THE ABSOLUTE PATH OF THE CURRENT WORKING DIRECTORY TO THE SCREEN 
-#cd /       
