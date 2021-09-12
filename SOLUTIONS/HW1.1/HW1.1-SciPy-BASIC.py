@@ -52,7 +52,7 @@ xt=x[train_idx]; yt=y[train_idx]; xv=x[val_idx];   yv=y[val_idx]
 #MODEL
 def model(x,p):
 	if(model_type=="linear"):   return  p[0]*x+p[1]  
-	if(model_type=="logistic"): return  p[0]+p[1]*(1.0/(1.0+np.exp(-(x-p[2])/(p[3]+0.00001))))
+	if(model_type=="logistic"): return  p[0]+p[1]*(1.0/(1.0+np.exp(-(x-p[2])/(p[3]+0.01))))
 
 #SAVE HISTORY FOR PLOTTING AT THE END
 iteration=0; iterations=[]; loss_train=[];  loss_val=[]
@@ -80,7 +80,7 @@ def loss(p):
 	return training_loss
 
 #INITIAL GUESS
-po=np.random.uniform(0.5,1.,size=NFIT)
+po=np.random.uniform(0.1,1.,size=NFIT)
 
 #TRAIN MODEL USING SCIPY MINIMIZ 
 res = minimize(loss, po, method=OPT_ALGO, tol=1e-15);  popt=res.x

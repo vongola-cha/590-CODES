@@ -23,12 +23,9 @@ FILE_TYPE="json"
 OPT_ALGO='BFGS'	#HYPER-PARAM
 
 #UNCOMMENT FOR VARIOUS MODEL CHOICES (ONE AT A TIME)
-model_type="logistic"; NFIT=4; X_KEYS=['x']; Y_KEYS=['y']
+# model_type="logistic"; NFIT=4; X_KEYS=['x']; Y_KEYS=['y']
 # model_type="linear";   NFIT=2; X_KEYS=['x']; Y_KEYS=['y']
-# model_type="logistic"; NFIT=4; X_KEYS=['y']; Y_KEYS=['is_adult']
-
-#RANDOM INITIAL GUESS FOR FITTING PARAMETERS
-p=np.random.uniform(0.5,1.,size=NFIT)
+model_type="logistic"; NFIT=4; X_KEYS=['y']; Y_KEYS=['is_adult']
 
 #SAVE HISTORY FOR PLOTTING AT THE END
 iteration=0; iterations=[]; loss_train=[];  loss_val=[]
@@ -57,10 +54,6 @@ class DataClass:
 			#MAKE ROWS=SAMPLE DIMENSION (TRANSPOSE)
 			self.X=np.transpose(np.array(X))
 			self.Y=np.transpose(np.array(Y))
-			self.been_partitioned=False
-
-			#INITIALIZE FOR LATER
-			self.YPRED_T=1; self.YPRED_V=1
 
 			#EXTRACT AGE<18
 			if(model_type=="linear"):
@@ -87,7 +80,6 @@ class DataClass:
 		#VALIDATION: NOT TRAINED ON BUT MONITORED DURING TRAINING
 		#TEST:		 NOT MONITORED DURING TRAINING (ONLY USED AT VERY END)
 
-
 		if(f_train+f_val+f_test != 1.0):
 			raise ValueError("f_train+f_val+f_test MUST EQUAL 1");
 
@@ -96,7 +88,10 @@ class DataClass:
 		CUT1=int(f_train*self.X.shape[0]); 
 		CUT2=int((f_train+f_val)*self.X.shape[0]); 
 		self.train_idx, self.val_idx, self.test_idx = rand_indices[:CUT1], rand_indices[CUT1:CUT2], rand_indices[CUT2:]
-		self.been_partitioned=True
+
+	def normalize(self):
+		self.X=(self.X-self.XMEAN)/self.XSTD 
+		self.Y=(self.Y-self.YMEAN)/self.YSTD  
 
 	def model(self,x,p):
 		if(model_type=="linear"):   return  p[0]*x+p[1]  
@@ -107,15 +102,11 @@ class DataClass:
 		self.YPRED_V=self.model(self.X[self.val_idx],p)
 		self.YPRED_TEST=self.model(self.X[self.test_idx],p)
 
-	def normalize(self):
-		self.X=(self.X-self.XMEAN)/self.XSTD 
-		self.Y=(self.Y-self.YMEAN)/self.YSTD  
-
 	def un_normalize(self):
 		self.X=self.XSTD*self.X+self.XMEAN 
 		self.Y=self.YSTD*self.Y+self.YMEAN 
-		self.YPRED_V=self.YSTD*self.YPRED_V+self.YMEAN 
 		self.YPRED_T=self.YSTD*self.YPRED_T+self.YMEAN 
+		self.YPRED_V=self.YSTD*self.YPRED_V+self.YMEAN 
 		self.YPRED_TEST=self.YSTD*self.YPRED_TEST+self.YMEAN 
 
 	#------------------------
@@ -127,7 +118,7 @@ class DataClass:
 		#MAKE PREDICTIONS FOR GIVEN PARAM
 		self.predict(p)
 
-		#LOSS
+		#LOSS (MSE)
 		training_loss=(np.mean((self.YPRED_T-self.Y[self.train_idx])**2.0))  #MSE
 		validation_loss=(np.mean((self.YPRED_V-self.Y[self.val_idx])**2.0))  #MSE
 
@@ -139,9 +130,15 @@ class DataClass:
 		return training_loss
 
 	def fit(self):
+		global p_final
+
+		#RANDOM INITIAL GUESS FOR FITTING PARAMETERS
+		po=np.random.uniform(0.5,1.,size=NFIT)
+
 		#TRAIN MODEL USING SCIPY MINIMIZ 
-		res = minimize(self.loss, p, method=OPT_ALGO, tol=1e-15)
-		popt=res.x; print("OPTIMAL PARAM:",popt)
+		res = minimize(self.loss, po, method=OPT_ALGO, tol=1e-15)
+		p_final=res.x; print("OPTIMAL PARAM:",p_final)
+		self.predict(p_final)
 
 		#PLOT TRAINING AND VALIDATION LOSS AT END
 		if(IPLOT):
@@ -174,7 +171,6 @@ class DataClass:
 			plt.xlabel(xla, fontsize=18);	plt.ylabel(yla, fontsize=18); 	plt.legend()
 			plt.show()
 
-
 #------------------------
 #MAIN 
 #------------------------
@@ -187,7 +183,7 @@ D.fit()
 D.plot_1()					#PLOT DATA
 D.plot_2()					#PLOT DATA
 
-D.un_normalize()			#NORMALIZE
+D.un_normalize()			#UN NORMALIZE
 D.plot_1()					#PLOT DATA
 D.plot_2()					#PLOT DATA
 
