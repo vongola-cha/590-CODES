@@ -24,8 +24,8 @@ OPT_ALGO='BFGS'	#HYPER-PARAM
 
 #UNCOMMENT FOR VARIOUS MODEL CHOICES (ONE AT A TIME)
 # model_type="logistic"; NFIT=4; X_KEYS=['x']; Y_KEYS=['y']
-# model_type="linear";   NFIT=2; X_KEYS=['x']; Y_KEYS=['y']
-model_type="logistic"; NFIT=4; X_KEYS=['y']; Y_KEYS=['is_adult']
+model_type="linear";   NFIT=2; X_KEYS=['x']; Y_KEYS=['y']
+# model_type="logistic"; NFIT=4; X_KEYS=['y']; Y_KEYS=['is_adult']
 
 #SAVE HISTORY FOR PLOTTING AT THE END
 iteration=0; iterations=[]; loss_train=[];  loss_val=[]
@@ -138,6 +138,15 @@ class DataClass:
 		#TRAIN MODEL USING SCIPY MINIMIZ 
 		res = minimize(self.loss, po, method=OPT_ALGO, tol=1e-15)
 		p_final=res.x; print("OPTIMAL PARAM:",p_final)
+		if(model_type=="linear"):
+			#COMPARE WITH ANALYTICAL SOLUTION
+			xtmean=np.mean(self.X[self.train_idx])
+			ytmean=np.mean(self.Y[self.train_idx])
+			cov=np.mean((self.X[self.train_idx]-xtmean)*(self.Y[self.train_idx]-ytmean))
+			varx=np.mean((self.X[self.train_idx]-xtmean)**2.)
+			print("m_analytical",cov/varx)
+			print("b_analytical",ytmean-xtmean*cov/varx)
+
 		self.predict(p_final)
 
 		#PLOT TRAINING AND VALIDATION LOSS AT END
