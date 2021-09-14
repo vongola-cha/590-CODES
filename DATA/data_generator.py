@@ -5,20 +5,62 @@ import numpy as np
 ##GENERATE DATA
 #--------------------------------------------------------
 
-#
+
 def write_json(x,name):
 	with open(name, "w") as write_file:
 		json.dump(x, write_file)
 
-# def write_csv(x,name):
+#--------------------
+#planar_x1_x2_y.json
+#--------------------
+
+#GENERATE DATA
+N=50
+X1=[]; X2=[]; Y=[]
+for x1 in np.linspace(-5,5,N):
+	for x2 in np.linspace(-6,6,N):
+		# noise=1*np.random.uniform(-1,1,size=1)[0]
+		y=2.718*x1+3.14*x2+1.0 #+noise
+		X1.append(x1)
+		X2.append(x2)
+		Y.append(y)
+		print(x1,x2,y)
+
+out={}
+out['x1']=X1
+out['x2']=X2
+out['y']=Y
+write_json(out,'planar_x1_x2_y.json')
+
+
+#GENERATE DATA
+N=25
+X1=[]; X2=[]; X3=[]; Y=[]
+for x1 in np.linspace(-5,5,N):
+	for x2 in np.linspace(-6,6,N):
+		for x3 in np.linspace(-10,10,N):
+			# noise=1*np.random.uniform(-1,1,size=1)[0]
+			y=2.718*x1+3.14*x2+1.4142*x3+1.0 #+noise
+			X1.append(x1)
+			X2.append(x2)
+			X3.append(x3)
+			Y.append(y)
+			print(x1,x2,x3,y)
+
+out={}
+out['x1']=X1
+out['x2']=X2
+out['x3']=X3
+out['y']=Y
+write_json(out,'planar_x1_x2_x3_y.json')
+
+exit()
 
 #MISC PARAM
 iplot		=	True
 
 name="housing_price";   out={}
 name="weight"; 			out={}
-
-
 
 
 #GROUND-TRUTH PARENT FUNCTION
@@ -74,5 +116,7 @@ out["x"]=x.tolist()
 out["y"]=yn.tolist()
 
 write_json(out,name+'.json')
+
+
 
 		
