@@ -32,6 +32,7 @@ for x1 in np.linspace(-5,5,N):
 	y=2.718*10*x1+100.0+noise
 	X1.append(x1); Y1.append(y)
 input1={}; input1['x1']=X1; input1['y']=Y1
+# X is a list with input sample (dim=number of samples)
 
 #------------------------
 #CONVERT TO MATRICES AND NORMALIZE
@@ -42,6 +43,12 @@ X=[]; Y=[]
 for key in input1.keys():
 	if(key in X_KEYS): X.append(input1[key])
 	if(key in Y_KEYS): Y.append(input1[key])
+
+
+
+print(type(X1))
+print(len(X1))
+exit()
 
 #MAKE ROWS=SAMPLE DIMENSION (TRANSPOSE)
 X=np.transpose(np.array(X))

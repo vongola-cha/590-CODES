@@ -13,12 +13,13 @@ OPT_ALGO='BFGS'
 
 #UNCOMMENT FOR VARIOUS MODEL CHOICES (ONE AT A TIME)
 model_type="logistic"; NFIT=4; xcol=1; ycol=2;
-model_type="linear";   NFIT=2; xcol=1; ycol=2; 
+# model_type="linear";   NFIT=2; xcol=1; ycol=2; 
 # model_type="logistic";   NFIT=4; xcol=2; ycol=0;
 
 #READ FILE
 with open(INPUT_FILE) as f:
 	my_input = json.load(f)  #read into dictionary
+
 
 #CONVERT INPUT INTO ONE LARGE MATRIX (SIMILAR TO PANDAS DF)
 X=[];
@@ -30,10 +31,6 @@ X=np.transpose(np.array(X))
 
 #SELECT COLUMNS FOR TRAINING 
 x=X[:,xcol];  y=X[:,ycol]
-
-#EXTRACT AGE<18
-if(model_type=="linear"):
-	y=y[x[:]<18]; x=x[x[:]<18]; 
 
 #COMPUTE BEFORE PARTITION AND SAVE FOR LATER
 XMEAN=np.mean(x); XSTD=np.std(x)
@@ -55,36 +52,104 @@ def model(x,p):
 	if(model_type=="logistic"): return  p[0]+p[1]*(1.0/(1.0+np.exp(-(x-p[2])/(p[3]+0.01))))
 
 #SAVE HISTORY FOR PLOTTING AT THE END
-iteration=0; iterations=[]; loss_train=[];  loss_val=[]
 
 #LOSS FUNCTION
-def loss(p):
-	global iterations,loss_train,loss_val,iteration
-
+def loss(p,xb=xt,yb=yt):
 	#TRAINING LOSS
-	yp=model(xt,p) #model predictions for given parameterization p
-	training_loss=(np.mean((yp-yt)**2.0))  #MSE
-
-	#VALIDATION LOSS
-	yp=model(xv,p) #model predictions for given parameterization p
-	validation_loss=(np.mean((yp-yv)**2.0))  #MSE
-
-	#WRITE TO SCREEN
-	if(iteration==0):    print("iteration	training_loss	validation_loss") 
-	if(iteration%25==0): print(iteration,"	",training_loss,"	",validation_loss) 
-	
-	#RECORD FOR PLOTING
-	loss_train.append(training_loss); loss_val.append(validation_loss)
-	iterations.append(iteration); iteration+=1
-
+	yp=model(xb,p) #model predictions for given parameterization p
+	training_loss=(np.mean((yp-yb)**2.0))  #MSE
 	return training_loss
 
 #INITIAL GUESS
 po=np.random.uniform(0.1,1.,size=NFIT)
 
-#TRAIN MODEL USING SCIPY MINIMIZ 
-res = minimize(loss, po, method=OPT_ALGO, tol=1e-15);  popt=res.x
-print("OPTIMAL PARAM:",popt)
+# #TRAIN MODEL USING SCIPY MINIMIZ 
+# res = minimize(loss, po, method=OPT_ALGO, tol=1e-15);  popt=res.x
+# print("OPTIMAL PARAM:",popt)
+
+# t=1
+train_type='stocastic'
+iteration=0; iterations=[]; loss_train=[];  loss_val=[]
+
+def optimizer(f,p0):
+	global iterations,loss_train,loss_val,iteration
+
+	print("#--------GRADIENT DECENT--------")
+
+	#PARAM
+	dx=0.001							#STEP SIZE FOR FINITE DIFFERENCE
+	LR=0.01								#LEARNING RATE
+	t=0 	 							#INITIAL ITERATION COUNTER
+	tmax=30000 						#MAX NUMBER OF ITERATION
+	tol=10**-10							#EXIT AFTER CHANGE IN F IS LESS THAN THIS 
+	xi=p0
+	previous_step=0
+	NDIM=len(p0)
+
+	print("INITAL GUESS: ",xi)
+
+	while(t<=tmax):
+
+		if(train_type=='batch' and t==0):
+			xb1=xt; yb1=yt
+
+		if(train_type=='stocastic'):
+			if(t==0): 
+				index_to_use=0
+			else:
+				if(index_to_use==len(xt)-1):
+					index_to_use=0
+				else:
+					index_to_use=index_to_use+1
+			#print(index_to_use,xt.shape); #exit()
+			xb1=xt[index_to_use]; yb1=yt[index_to_use]
+		
+
+		#NUMERICALLY COMPUTE GRADIENT 
+		df_dx=np.zeros(NDIM)
+		for i in range(0,NDIM):
+			dX=np.zeros(NDIM);
+			dX[i]=dx; 
+			xm1=xi-dX; #print(xi,xm1,dX,dX.shape,xi.shape)
+			df_dx[i]=(f(xi,xb1,yb1)-f(xm1,xb1,yb1))/dx
+		#print(xi.shape,df_dx.shape)
+		# if(GD)
+			xip1=xi-LR*df_dx #STEP 
+		# if(MOM
+		# 	xip1=xi-LR*df_dx #STEP 
+
+		if(t%2==0):
+			df=np.mean(np.absolute(f(xip1,xb1,yb1)-f(xi,xb1,yb1)))
+			print(t,"	",xi,"	","	",f(xi,xb1,yb1)) #,df) 
+
+			#TRAINING LOSS
+			yp=model(xt,xi) #model predictions for given parameterization p
+			training_loss=(np.mean((yp-yt)**2.0))  #MSE
+
+			#VALIDATION LOSS
+			yp=model(xv,xi) #model predictions for given parameterization p
+			validation_loss=(np.mean((yp-yv)**2.0))  #MSE
+
+			#WRITE TO SCREEN
+			# if(iteration==0):    print("iteration	training_loss	validation_loss") 
+			# if(iteration%25==0): print(iteration,"	",training_loss,"	",validation_loss) 
+			
+			#RECORD FOR PLOTING
+			loss_train.append(training_loss); loss_val.append(validation_loss)
+			iterations.append(iteration); iteration+=1
+
+
+			if(df<tol):
+				print("STOPPING CRITERION MET (STOPPING TRAINING)")
+				break
+
+		#UPDATE FOR NEXT ITERATION OF LOOP
+		xi=xip1
+		t=t+1
+
+	return xi
+popt=optimizer(loss, po)
+# exit()
 
 #PREDICTIONS
 xm=np.array(sorted(xt))
