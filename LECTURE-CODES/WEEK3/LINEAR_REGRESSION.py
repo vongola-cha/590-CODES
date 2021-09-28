@@ -46,9 +46,9 @@ for key in input1.keys():
 
 
 
-print(type(X1))
-print(len(X1))
-exit()
+# print(type(X1))
+# print(len(X1))
+# exit()
 
 #MAKE ROWS=SAMPLE DIMENSION (TRANSPOSE)
 X=np.transpose(np.array(X))

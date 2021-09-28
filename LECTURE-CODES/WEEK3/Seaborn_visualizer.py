@@ -261,9 +261,9 @@ def pandas_2D_plots(df,col_to_plot=[0,1,2], HUE=None):
 
 # #----------------------
 # #DATASET-2: CAR MPG DATA 
-# #----------------------
+# # #----------------------
 
-# #GET DATA FROM SEABORN
+# # #GET DATA FROM SEABORN
 # df = sns.load_dataset("mpg")
 
 # get_pd_info(df); 

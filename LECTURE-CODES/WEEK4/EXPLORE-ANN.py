@@ -11,7 +11,7 @@ import json
 max_rand_wb=1
 
 #NODES IN EACH LAYER [INPUT,H1,H2,OUTPUT]
-layers		=	[2,3,2,1] 
+layers		=	[10,10,2,10,10,1] 
 
 #CALCULATE NUMBER OF FITTING PARAMETERS FOR SPECIFIED NN 
 NFIT=0; 
@@ -21,7 +21,7 @@ for i in range(1,len(layers)):
 
 print("Nodes in layer-",i,"	=	",layers[i])  
 print("NFIT			:	",NFIT)
-
+exit()
 #TAKES A LONG VECTOR W OF WEIGHTS AND BIAS AND RETURNS 
 #WEIGHT AND BIAS SUBMATRICES
 def extract_submatrices(WB):
@@ -36,12 +36,15 @@ def extract_submatrices(WB):
 		K=K+Nrow*Ncol; #print i,k0,K
 		submatrices.append(w); submatrices.append(b)
 		print(w.shape,b.shape)
+	print(submatrices)
 	return submatrices
 
 #RANDOM INITIAL GUESS
 po=np.random.uniform(-max_rand_wb,max_rand_wb,size=NFIT)
-
 print(po)
+# print()
+
 extract_submatrices(po)
+exit()
 
 
