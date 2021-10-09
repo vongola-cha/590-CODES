@@ -31,7 +31,6 @@ def get_info(image):
     # print("image[0:3].shape:", image[0:3].shape)
 
 get_info(x)
-
 #BASIC SLICING AND PLOTS
 # print(x[0,0],x[0,9],x[9,0])
 # print(x[:,4])
@@ -40,6 +39,7 @@ get_info(x)
 #CROP
 plt.imshow(x[0:int(0.45*x.shape[0]),:]); plt.show()
 plt.imshow(x[:,0:int(0.45*x.shape[0])]); plt.show()
+# exit()
 
 
 #SURFACE PLOT
@@ -54,10 +54,11 @@ def surface_plot(image):
 
 #REDUCE RESOLUTION-1
 from skimage.transform import rescale, resize, downscale_local_mean
-factor=25
+factor=50
 x = resize(x, (x.shape[0] // factor, x.shape[1] // factor), anti_aliasing=True)
 get_info(x)
-
+plt.imshow(x); plt.show()
+# exit()
 # #SURFACE PLOT
 from skimage.color import rgb2gray 
 tmp=rgb2gray(x)
@@ -66,10 +67,10 @@ surface_plot(tmp)
 
 #APPLY FILTER
 def filter(x):
-    filter_ED=[[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]
+    # filter_ED=[[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]
     # filter_ED=[[0,-1,0],[-1,4,-1],[0,-1,0]]
     # filter_ED=np.array([[1,2,1],[2,4,2],[1,2,1]])/16.0
-    # filter_ED=[[0,-1,0],[-1,5,-1],[0,-1,0]]
+    filter_ED=[[0,-1,0],[-1,5,-1],[0,-1,0]]
 
     tmp=np.copy(x)
     for channel in range(0,x.shape[2]):

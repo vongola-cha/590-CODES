@@ -41,6 +41,7 @@ print(x[0,0],x[0,9],x[9,0])
 print(x[:,4])
 print(x[4,:])
 
+#SHOW IMAGES
 plt.imshow(x, cmap=plt.cm.gray); plt.show()
 plt.imshow([x[4,:]], cmap=plt.cm.gray); plt.show()
 plt.imshow(np.array([x[:,4]]).reshape(10,1), cmap=plt.cm.gray); plt.show()

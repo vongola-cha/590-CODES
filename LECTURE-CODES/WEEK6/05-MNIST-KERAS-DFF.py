@@ -15,6 +15,9 @@ from pandas import DataFrame
 from keras.datasets import mnist
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 
+
+
+
 #QUICK INFO ON IMAGE
 def get_info(image):
 	print("\n------------------------")
@@ -29,7 +32,6 @@ def get_info(image):
 
 get_info(train_images)
 get_info(train_labels)
-
 
 ##------------------------
 #SET UP MODEL AND DATA 
@@ -59,7 +61,7 @@ network.compile(optimizer='rmsprop',
 #PREPROCESS THE DATA
 
 #UNWRAP 28x28x MATRICES INTO LONG VECTORS (784,1) #STACK AS BATCH
-train_images = train_images.reshape((60000, 28 * 28)) 
+train_images = train_images.reshape((NKEEP, 28 * 28)) 
 #RESCALE INTS [0 to 255] MATRIX INTO RANGE FLOATS RANGE [0 TO 1] 
 #train_images.max()=255 for grayscale
 train_images = train_images.astype('float32') / train_images.max() 
@@ -67,6 +69,12 @@ train_images = train_images.astype('float32') / train_images.max()
 #REPEAT FOR TEST DATA
 test_images = test_images.reshape((10000, 28 * 28))
 test_images = test_images.astype('float32') / test_images.max()
+
+#DEBUGGING
+NKEEP=60000
+batch_size=int(0.1*NKEEP)
+train_images=train_images[0:NKEEP,:,:]
+train_labels=train_labels[0:NKEEP]
 
 from keras.utils import to_categorical
 
@@ -84,13 +92,12 @@ test_labels = to_categorical(test_labels)
 ##------------------------
 
 #TRAIN
-#epochs=15	#OVERFIT
-epochs=5 	#EARLY STOPPING
-network.fit(train_images, train_labels, epochs=epochs, batch_size=128)
+epochs=30 
+network.fit(train_images, train_labels, epochs=epochs, batch_size=batch_size)
 
-#EVALUTE
-train_loss, train_acc = network.evaluate(train_images, train_labels)
-test_loss, test_acc = network.evaluate(test_images, test_labels)
+# #EVALUTE
+train_loss, train_acc = network.evaluate(train_images, train_labels, batch_size=batch_size)
+test_loss, test_acc = network.evaluate(test_images, test_labels,batch_size=test_images.shape[0])
 print('train_acc:', train_acc)
 print('test_acc:', test_acc)
 

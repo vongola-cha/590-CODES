@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 
 print('---------SINGLE IMAGE------------')
 
-nx=100  #number of pixels in x
-ny=200  #number of pixels in y
+nx=400  #number of pixels in x
+ny=400  #number of pixels in y
 
 #GENERATE IMAGE
 
@@ -38,6 +38,7 @@ def get_info(image):
     # print("image[0:3].shape:", image[0:3].shape)
 get_info(x)
 
+# exit()
 #BASIC SLICING
 # print(x[:,2])
 # print(x[2,:])
@@ -45,7 +46,7 @@ get_info(x)
 #SHOW SUB-REGION IMAGE
 plt.imshow(x[2:10,:], cmap=plt.cm.gray); plt.show()
 plt.imshow(x[:,2:10], cmap=plt.cm.gray); plt.show()
-
+# exit()
 #----------------------------------
 # BATCH OF N GRAYSCALE NOISE SAMPLES
 #----------------------------------
