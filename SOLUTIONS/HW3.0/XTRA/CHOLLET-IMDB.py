@@ -22,15 +22,17 @@ def vectorize_sequences(sequences, dimension=10000):
         results[i, sequence] = 1.
     return results
 
+print(x_train[0])
 x_train = vectorize_sequences(train_data)
 x_test = vectorize_sequences(test_data)
-
 print(x_train[0])
 
 
+print(y_train[0])
 y_train = np.asarray(train_labels).astype('float32')
 y_test = np.asarray(test_labels).astype('float32')
-
+print(y_train[0])
+# exit()
 
 from keras import models
 from keras import layers
