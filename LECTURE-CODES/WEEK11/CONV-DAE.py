@@ -24,7 +24,7 @@ if(DATA=="MNIST"):
 if(DATA=="CIFAR"):
     (x_train, _), (x_test, _) = cifar10.load_data()
     N_channels=3; PIX=32
-    EPOCHS=250 #OVERWRITE
+    EPOCHS=100 #OVERWRITE
 
 #NORMALIZE AND RESHAPE
 x_train = x_train.astype('float32') / 255.
@@ -51,33 +51,48 @@ if(INJECT_NOISE):
     x_test = np.clip(x_test, 0., 1.)
 
 #BUILD CNN-AE MODEL
-input_img = keras.Input(shape=(PIX, PIX, N_channels))
 
-#ENCODER
-x = layers.Conv2D(16, (3, 3), activation='relu', padding='same')(input_img)
-x = layers.MaxPooling2D((2, 2), padding='same')(x)
-x = layers.Conv2D(8, (3, 3), activation='relu', padding='same')(x)
-x = layers.MaxPooling2D((2, 2), padding='same')(x)
-x = layers.Conv2D(8, (3, 3), activation='relu', padding='same')(x)
 
-encoded = layers.MaxPooling2D((2, 2), padding='same')(x)
-# AT THIS POINT THE REPRESENTATION IS (4, 4, 8) I.E. 128-DIMENSIONAL
-
-#DECODER
-x = layers.Conv2D(8, (3, 3), activation='relu', padding='same')(encoded)
-x = layers.UpSampling2D((2, 2))(x)
-x = layers.Conv2D(8, (3, 3), activation='relu', padding='same')(x)
-x = layers.UpSampling2D((2, 2))(x)
-
-#EITHER PAD OR NOT TO MAKE OUTPUT SHAPE CORRECT
 if(DATA=="MNIST"):
-    x = layers.Conv2D(16, (3, 3), activation='relu')(x)
-if(DATA=="CIFAR"):
-    x = layers.Conv2D(16, (3, 3), activation='relu', padding='same')(x)
-x = layers.UpSampling2D((2, 2))(x)
+    input_img = keras.Input(shape=(PIX, PIX, N_channels))
 
-#OUTPUT
-decoded = layers.Conv2D(N_channels, (3, 3), activation='sigmoid', padding='same')(x)
+    # #ENCODER
+    x = layers.Conv2D(32, (3, 3), activation='relu', padding='same')(input_img)
+    x = layers.MaxPooling2D((2, 2), padding='same')(x)
+    x = layers.Conv2D(16, (3, 3), activation='relu', padding='same')(x)
+    x = layers.MaxPooling2D((2, 2), padding='same')(x)
+    x = layers.Conv2D(8, (3, 3), activation='relu', padding='same')(x)
+
+    encoded = layers.MaxPooling2D((2, 2), padding='same')(x)
+    # # AT THIS POINT THE REPRESENTATION IS (4, 4, 8) I.E. 128-DIMENSIONAL
+ 
+    # #DECODER
+    x = layers.Conv2D(8, (3, 3), activation='relu', padding='same')(encoded)
+    x = layers.UpSampling2D((2, 2))(x)
+    x = layers.Conv2D(16, (3, 3), activation='relu', padding='same')(x)
+    x = layers.UpSampling2D((2, 2))(x)
+    x = layers.Conv2D(32, (3, 3), activation='relu')(x)
+    x = layers.UpSampling2D((2, 2))(x)
+    decoded = layers.Conv2D(N_channels, (3, 3), activation='sigmoid', padding='same')(x)
+
+
+if(DATA=="CIFAR"):
+    input_img = keras.Input(shape=(PIX, PIX, N_channels))
+
+    #ENCODER
+    x = layers.Conv2D(32, (3, 3), activation='relu', padding='same')(input_img)
+    x = layers.MaxPooling2D((2, 2), padding='same')(x)
+    x = layers.Conv2D(16, (3, 3), activation='relu', padding='same')(x)
+    encoded = layers.MaxPooling2D((2, 2), padding='same')(x)
+
+    #DECODER
+    x = layers.Conv2D(16, (3, 3), activation='relu', padding='same')(encoded)
+    x = layers.UpSampling2D((2, 2))(x)
+    x = layers.Conv2D(32, (3, 3), activation='relu', padding='same')(x)
+    x = layers.UpSampling2D((2, 2))(x)
+    decoded = layers.Conv2D(N_channels, (3, 3), activation='sigmoid', padding='same')(x)
+
+
 
 #COMPILE
 autoencoder = keras.Model(input_img, decoded)
