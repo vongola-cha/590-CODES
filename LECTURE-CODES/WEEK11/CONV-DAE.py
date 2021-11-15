@@ -14,7 +14,7 @@ INJECT_NOISE    =   False
 EPOCHS          =   35
 NKEEP           =   2500        #DOWNSIZE DATASET
 BATCH_SIZE      =   128
-DATA            =   "CIFAR"
+DATA            =   "MNIST"
 
 #GET DATA
 if(DATA=="MNIST"):
